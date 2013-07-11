@@ -1,5 +1,4 @@
 require 'torch'
-require 'nn'
 
 local tester
 local precision

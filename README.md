@@ -1,5 +1,5 @@
-Torch Unit Testing
-==================
+Unit Testing for Torch
+======================
 
 This package provides a set of standard unit tests, to validate
 Torch's core functions and packages.
