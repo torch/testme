@@ -20,7 +20,7 @@ end
 math.randomseed(os.time())
 
 print('')
-print('Testing torch with type = double')
+print('Testing image with type = double')
 print('')
 torch.setdefaulttensortype('torch.DoubleTensor')
 precision = 1e-4
@@ -29,7 +29,7 @@ tester:add(test)
 tester:run()
 
 print('')
-print('Testing torch with type = float')
+print('Testing image with type = float')
 print('')
 torch.setdefaulttensortype('torch.FloatTensor')
 precision = 1e-4
