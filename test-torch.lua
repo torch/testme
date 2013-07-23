@@ -347,8 +347,8 @@ function test.div()
    tester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
--- Done. dot, mv, add, mul, div
--- TODO: 
+-- Done. dot, mv, add, mul, div, abs, max, min
+-- TODO:
 
 math.randomseed(os.time())
 
