@@ -348,7 +348,13 @@ function test.div()
 end
 
 -- Done. dot, mv, add, mul, div, abs, max, min
--- TODO:
+-- TODO: cat, diag, eye, linspace, logspace, ones, rand, randn, range, randperm,
+--       reshape, tril, triu, zeros, acos, asin, atan, ceil, cos, cosh, exp, floor,
+--       log, log1p, pow, sin, sinh, sqrt, tan, tanh, cmul, addcmul, div, cdiv,
+--       addcdiv, addmv, addr, addmm, mv, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
+--       cumprod, cumsum, mean, prod, sort, std, sum, var, norm, dist, numel,
+--       trace, conv2, xcorr2, conv3, xcorr3, gesv, gels, symeig, eig, svd,
+--       inverse, lt, le, gt, ge, eq, ne 
 
 math.randomseed(os.time())
 
