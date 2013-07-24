@@ -196,7 +196,7 @@ function test.mv()
 
    local err = (res1-res2):abs():max()
    
-   tester:assertlt(err, precision, 'error in torch.dot')
+   tester:assertlt(err, precision, 'error in torch.mv')
 end
 
 function test.add()
