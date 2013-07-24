@@ -3,7 +3,7 @@ require 'torch'
 local tester
 local precision
 
-local test = {}
+test = {}
 
 function test.dot()
    local v1 = torch.randn(100)
@@ -21,13 +21,14 @@ function test.dot()
    tester:assertlt(err, precision, 'error in torch.dot')
 end
 
-function test.abs()  -- [res] torch.abs([res,] x)
+local genericSingleOpTest = [[
+   -- [res] torch.functionname([res,] x)
    -- contiguous
    local m1 = torch.randn(100,100)
-   local res1 = torch.abs(m1[{ 4,{} }])
+   local res1 = torch.functionname(m1[{ 4,{} }])
    local res2 = res1:clone():zero()
    for i = 1,res1:size(1) do
-      res2[i] = math.abs(m1[4][i])
+      res2[i] = math.functionname(m1[4][i])
    end
    local err = res1:clone():zero()
    -- find absolute error
@@ -35,20 +36,19 @@ function test.abs()  -- [res] torch.abs([res,] x)
       err[i] = math.abs(res1[i] - res2[i])
    end
    -- find maximum element of error
-   local maxerr = 0
+   local maxerrc = 0
    for i = 1, err:size(1) do
-      if err[i] > maxerr then
-	 maxerr = err[i]
+      if err[i] > maxerrc then
+	 maxerrc = err[i]
       end
-   end   
-   tester:assertlt(maxerr, precision, 'error in torch.abs - contiguous')
+   end      
    
    -- non-contiguous
    local m1 = torch.randn(100,100)
-   local res1 = torch.abs(m1[{ {}, 4 }])
+   local res1 = torch.functionname(m1[{ {}, 4 }])
    local res2 = res1:clone():zero()
    for i = 1,res1:size(1) do
-      res2[i] = math.abs(m1[i][4])
+      res2[i] = math.functionname(m1[i][4])
    end
    local err = res1:clone():zero()
    -- find absolute error
@@ -56,13 +56,118 @@ function test.abs()  -- [res] torch.abs([res,] x)
       err[i] = math.abs(res1[i] - res2[i])
    end
    -- find maximum element of error
-   local maxerr = 0
+   local maxerrnc = 0
    for i = 1, err:size(1) do
-      if err[i] > maxerr then
-	 maxerr = err[i]
+      if err[i] > maxerrnc then
+	 maxerrnc = err[i]
       end
-   end   
-   tester:assertlt(maxerr, precision, 'error in torch.abs - non-contiguous')
+   end
+   return maxerrc, maxerrnc
+]]
+
+function test.abs()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'abs'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.sin()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'sin'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.sinh()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'sinh'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.asin()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'asin'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.cos()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'cos'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.cosh()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'cosh'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.acos()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'acos'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.tan()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'tan'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.tanh()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'tanh'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.atan()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'atan'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.log()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'log'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.sqrt()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'sqrt'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.exp()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'exp'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.floor()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'floor'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function test.ceil()
+   local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'ceil'))
+   local maxerrc, maxerrnc = f()
+   tester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   tester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
 end
 
 function test.max()  -- torch.max([resval, resind,] x [,dim])
@@ -347,11 +452,54 @@ function test.div()
    tester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
--- Done. dot, mv, add, mul, div, abs, max, min
+function test.pow()  -- [res] torch.pow([res,] x)
+   -- contiguous
+   local m1 = torch.randn(100,100)
+   local res1 = torch.pow(m1[{ 4,{} }], 3)
+   local res2 = res1:clone():zero()
+   for i = 1,res1:size(1) do
+      res2[i] = math.pow(m1[4][i], 3)
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      err[i] = math.abs(res1[i] - res2[i])
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      if err[i] > maxerr then
+	 maxerr = err[i]
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.pow - contiguous')
+   
+   -- non-contiguous
+   local m1 = torch.randn(100,100)
+   local res1 = torch.pow(m1[{ {}, 4 }], 3)
+   local res2 = res1:clone():zero()
+   for i = 1,res1:size(1) do
+      res2[i] = math.pow(m1[i][4], 3)
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      err[i] = math.abs(res1[i] - res2[i])
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      if err[i] > maxerr then
+	 maxerr = err[i]
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.pow - non-contiguous')
+end
+
+-- Done. dot, mv, add, mul, div, abs, max, min, pow, sin, sinh, cos, cosh, tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil
 -- TODO: cat, diag, eye, linspace, logspace, ones, rand, randn, range, randperm,
---       reshape, tril, triu, zeros, acos, asin, atan, ceil, cos, cosh, exp, floor,
---       log, log1p, pow, sin, sinh, sqrt, tan, tanh, cmul, addcmul, div, cdiv,
---       addcdiv, addmv, addr, addmm, mv, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
+--       reshape, tril, triu, zeros, log1p, cmul, addcmul, cdiv,
+--       addcdiv, addmv, addr, addmm, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
 --       cumprod, cumsum, mean, prod, sort, std, sum, var, norm, dist, numel,
 --       trace, conv2, xcorr2, conv3, xcorr3, gesv, gels, symeig, eig, svd,
 --       inverse, lt, le, gt, ge, eq, ne 
