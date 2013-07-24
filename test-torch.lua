@@ -3,7 +3,7 @@ require 'torch'
 local tester
 local precision
 
-test = {}
+local test = {}
 
 function test.dot()
    local v1 = torch.randn(100)
