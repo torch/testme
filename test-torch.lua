@@ -496,13 +496,143 @@ function test.pow()  -- [res] torch.pow([res,] x)
    tester:assertlt(maxerr, precision, 'error in torch.pow - non-contiguous')
 end
 
--- Done. dot, mv, add, mul, div, abs, max, min, pow, sin, sinh, cos, cosh, tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil
+function test.cdiv()  -- [res] torch.cdiv([res,] tensor1, tensor2)
+   -- contiguous
+   local m1 = torch.randn(10, 10, 10)
+   local m2 = torch.randn(10, 10 * 10)
+   local sm1 = m1[{4, {}, {}}]
+   local sm2 = m2[{4, {}}]
+   local res1 = torch.cdiv(sm1, sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] / sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cdiv - contiguous')
+
+   -- non-contiguous
+   local m1 = torch.randn(10, 10, 10)
+   local m2 = torch.randn(10 * 10, 10 * 10)
+   local sm1 = m1[{{}, 4, {}}]
+   local sm2 = m2[{{}, 4}]
+   local res1 = torch.cdiv(sm1, sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] / sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cdiv - non-contiguous')  
+end
+
+function test.cmul()  -- [res] torch.cmul([res,] tensor1, tensor2)
+   -- contiguous
+   local m1 = torch.randn(10, 10, 10)
+   local m2 = torch.randn(10, 10 * 10)
+   local sm1 = m1[{4, {}, {}}]
+   local sm2 = m2[{4, {}}]
+   local res1 = torch.cmul(sm1, sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] * sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cmul - contiguous')
+
+   -- non-contiguous
+   local m1 = torch.randn(10, 10, 10)
+   local m2 = torch.randn(10 * 10, 10 * 10)
+   local sm1 = m1[{{}, 4, {}}]
+   local sm2 = m2[{{}, 4}]
+   local res1 = torch.cmul(sm1, sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] * sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cmul - non-contiguous')  
+end
+
+-- Done. dot, mv, add, mul, div, abs, max, min, pow, sin, sinh, cos, cosh,
+--       tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil, cdiv, cmul
 -- TODO: cat, diag, eye, linspace, logspace, ones, rand, randn, range, randperm,
---       reshape, tril, triu, zeros, log1p, cmul, addcmul, cdiv,
+--       reshape, tril, triu, zeros, log1p, cmul, addcmul, 
 --       addcdiv, addmv, addr, addmm, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
 --       cumprod, cumsum, mean, prod, sort, std, sum, var, norm, dist, numel,
 --       trace, conv2, xcorr2, conv3, xcorr3, gesv, gels, symeig, eig, svd,
---       inverse, lt, le, gt, ge, eq, ne 
+--       inverse, lt, le, gt, ge, eq, ne
+--       Fundamental tensor functions from here: http://www.torch.ch/manual/torch/tensor
 
 math.randomseed(os.time())
 
