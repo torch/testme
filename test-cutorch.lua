@@ -379,6 +379,37 @@ function test.add()
    -- [res] torch.add([res,] tensor1, value, tensor2)
 end
 
+function test.mul()
+   local m1 = torch.randn(10,10)
+   local res1 = m1:clone():cuda()
+
+   res1[{ {},3 }]:mul(2)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = res2[{ i,3 }] * 2
+   end
+   
+   local err = (res1:float()-res2):abs():max()
+   
+   tester:assertlt(err, precision, 'error in torch.mul - scalar, non contiguous')
+end
+
+function test.div()
+   local m1 = torch.randn(10,10)
+   local res1 = m1:clone():cuda()
+
+   res1[{ {},3 }]:div(2)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = res2[{ i,3 }] / 2
+   end
+   
+   local err = (res1:float()-res2):abs():max()
+   
+   tester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
+end
 
 -- CUDA caveats -- 
 --[[
@@ -391,10 +422,10 @@ end
    torch.mv is not implemented
 
 --]]
--- Done. dot, add, abs, max, min, sin, sinh, cos, cosh,
+-- Done. dot, add, mul, div, abs, max, min, sin, sinh, cos, cosh, 
 --       tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil
 --       
--- TODO: ones, zeros, cdiv, cmul, pow, mul, div, cat, diag, eye, linspace, 
+-- TODO: ones, zeros, cdiv, cmul, pow, cat, diag, eye, linspace, 
 --       logspace, rand, randn, range, randperm,
 --       reshape, tril, triu, log1p, addcmul, lt, le, gt, ge, eq, ne
 --       addcdiv, addmv, addr, addmm, mm, ger, A+B, A-B,-B, A*B, A/x, cross,

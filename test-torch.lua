@@ -365,34 +365,6 @@ function test.add()
 end
 
 function test.mul()
-   local m1 = torch.randn(100,100)
-   local v1 = torch.randn(100)
-
-   local res1 = torch.cmul(m1[{ 4,{} }],v1)
-
-   local res2 = res1:clone():zero()
-   for i = 1,m1:size(2) do
-      res2[i] = m1[4][i] * v1[i]
-   end
-
-   local err = (res1-res2):abs():max()
-   
-   tester:assertlt(err, precision, 'error in torch.mul - contiguous')
-
-   local m1 = torch.randn(100,100)
-   local v1 = torch.randn(100)
-
-   local res1 = torch.cmul(m1[{ {},4 }],v1)
-
-   local res2 = res1:clone():zero()
-   for i = 1,m1:size(1) do
-      res2[i] = m1[i][4] * v1[i]
-   end
-
-   local err = (res1-res2):abs():max()
-   
-   tester:assertlt(err, precision, 'error in torch.mul - non contiguous')
-
    local m1 = torch.randn(10,10)
    local res1 = m1:clone()
 
@@ -409,34 +381,6 @@ function test.mul()
 end
 
 function test.div()
-   local m1 = torch.randn(100,100)
-   local v1 = torch.rand(100):add(1)
-
-   local res1 = torch.cdiv(m1[{ 4,{} }],v1)
-
-   local res2 = res1:clone():zero()
-   for i = 1,m1:size(2) do
-      res2[i] = m1[4][i] / v1[i]
-   end
-
-   local err = (res1-res2):abs():max()
-   
-   tester:assertlt(err, precision, 'error in torch.div - contiguous')
-
-   local m1 = torch.randn(100,100)
-   local v1 = torch.rand(100):add(1)
-
-   local res1 = torch.cdiv(m1[{ {},4 }],v1)
-
-   local res2 = res1:clone():zero()
-   for i = 1,m1:size(1) do
-      res2[i] = m1[i][4] / v1[i]
-   end
-
-   local err = (res1-res2):abs():max()
-   
-   tester:assertlt(err, precision, 'error in torch.div - non contiguous')
-
    local m1 = torch.randn(10,10)
    local res1 = m1:clone()
 
