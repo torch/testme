@@ -597,9 +597,12 @@ end
    You cannot do torch.sin(t) 
    You can only do t:sin()
 
-   max and min functions on a particular dimension do not return the index of the max element, but just the max value. (this is not the definition according to the manual)
+   max and min functions on a particular dimension do not return the index of the max element, 
+   but just the max value. (this is not the definition according to the manual)
 
    torch.mv is not implemented
+   torch.ones is not implemented
+   torch.zeros is not implemented
 
 --]]
 -- Done. dot, add, mul, div, abs, max, min, sin, sinh, cos, cosh, 
