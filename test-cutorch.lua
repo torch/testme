@@ -411,6 +411,186 @@ function test.div()
    tester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
+function test.pow()  -- [res] torch.pow([res,] x)
+   -- contiguous
+   local m1 = torch.randn(100,100)
+   local m1c = m1:cuda()
+   local res1 = m1c[{ 4,{} }]
+   res1:pow(3)
+   local res2 = res1:clone():zero():float()
+   for i = 1,res1:size(1) do
+      res2[i] = math.pow(m1[4][i], 3)
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      err[i] = math.abs(res1[i] - res2[i])
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      if err[i] > maxerr then
+	 maxerr = err[i]
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.pow - contiguous')
+   
+   -- non-contiguous
+   local m1 = torch.randn(100,100)
+   local m1c = m1:cuda()
+   local res1 = m1c[{ {}, 4 }]
+   res1:pow(3)
+   local res2 = res1:clone():zero():float()
+   for i = 1,res1:size(1) do
+      res2[i] = math.pow(m1[i][4], 3)
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      err[i] = math.abs(res1[i] - res2[i])
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      if err[i] > maxerr then
+	 maxerr = err[i]
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.pow - non-contiguous')
+end
+
+function test.cdiv()  -- [res] torch.cdiv([res,] tensor1, tensor2)
+   -- contiguous
+   local m1 = torch.randn(10, 10, 10):cuda()
+   local m2 = torch.randn(10, 10 * 10):cuda()
+   local res1 = m1[{4, {}, {}}]
+   local sm1 = res1:float()
+   local sm2 = m2[{4, {}}]
+   res1:cdiv(sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] / sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cdiv - contiguous')
+
+   -- non-contiguous
+   local m1 = torch.randn(10, 10, 10):cuda()
+   local m2 = torch.randn(10 * 10, 10 * 10):cuda()  
+   local res1 = m1[{{}, 4, {}}]
+   local sm1 = res1:clone()
+   local sm2 = m2[{{}, 4}]
+   res1:cdiv(sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] / sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cdiv - non-contiguous')  
+end
+
+function test.cmul()  -- [res] torch.cmul([res,] tensor1, tensor2)
+   -- contiguous
+   local m1 = torch.randn(10, 10, 10):cuda()
+   local m2 = torch.randn(10, 10 * 10):cuda()
+   local res1 = m1[{4, {}, {}}]
+   local sm1 = res1:float()
+   local sm2 = m2[{4, {}}]
+   res1:cmul(sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] * sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cmul - contiguous')
+
+   -- non-contiguous
+   local m1 = torch.randn(10, 10, 10):cuda()
+   local m2 = torch.randn(10 * 10, 10 * 10):cuda()
+   local res1 = m1[{{}, 4, {}}]
+   local sm1 = res1:float()
+   local sm2 = m2[{{}, 4}]
+   res1:cmul(sm2)
+   local res2 = res1:clone():zero()
+   for i = 1,sm1:size(1) do
+      for j = 1, sm1:size(2) do
+	 local idx1d = (((i-1)*sm1:size(1)))+j 
+	 res2[i][j] = sm1[i][j] * sm2[idx1d]
+      end
+   end
+   local err = res1:clone():zero()
+   -- find absolute error
+   for i = 1, res1:size(1) do
+      for j = 1, res1:size(2) do
+	 err[i][j] = math.abs(res1[i][j] - res2[i][j])
+      end
+   end
+   -- find maximum element of error
+   local maxerr = 0
+   for i = 1, err:size(1) do
+      for j = 1, err:size(2) do
+	 if err[i][j] > maxerr then
+	    maxerr = err[i][j]
+	 end
+      end
+   end   
+   tester:assertlt(maxerr, precision, 'error in torch.cmul - non-contiguous')  
+end
+
 -- CUDA caveats -- 
 --[[
    where t is a torch.CudaTensor
@@ -423,9 +603,9 @@ end
 
 --]]
 -- Done. dot, add, mul, div, abs, max, min, sin, sinh, cos, cosh, 
---       tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil
---       
--- TODO: ones, zeros, cdiv, cmul, pow, cat, diag, eye, linspace, 
+--       tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil,
+--       cdiv, cmul, pow,
+-- TODO: ones, zeros, cat, diag, eye, linspace, 
 --       logspace, rand, randn, range, randperm,
 --       reshape, tril, triu, log1p, addcmul, lt, le, gt, ge, eq, ne
 --       addcdiv, addmv, addr, addmm, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
