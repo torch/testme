@@ -594,32 +594,6 @@ function test.ones()  -- [res] torch.ones([res,] m [,n...])
    tester:assertlt(maxerr, precision, 'error in torch.ones')
 end
 
-function test.ones()  -- [res] torch.ones([res,] m [,n...])
-   -- contiguous
-   local m1 = torch.ones(10, 10, 10)
-   local err = m1:clone():zero()
-   -- find absolute error
-   for i = 1,m1:size(1) do
-      for j = 1, m1:size(2) do
-	 for k = 1, m1:size(3) do
-	    err[i][j][k] = math.abs(m1[i][j][k] - 1.0)
-	 end
-      end
-   end
-   -- find maximum element of error
-   local maxerr = 0
-   for i = 1, err:size(1) do
-      for j = 1, err:size(2) do
-	 for k = 1, err:size(3) do
-	    if err[i][j][k] > maxerr then
-	       maxerr = err[i][j][k]
-	    end
-	 end
-      end
-   end   
-   tester:assertlt(maxerr, precision, 'error in torch.ones')
-end
-
 function test.zeros()  -- [res] torch.zeros([res,] m [,n...])
    -- contiguous
    local m1 = torch.zeros(10, 10, 10)
