@@ -608,7 +608,7 @@ end
 -- Done. dot, add, mul, div, abs, max, min, sin, sinh, cos, cosh, 
 --       tan, tanh, asin, acos, atan, log, sqrt, exp, floor, ceil,
 --       cdiv, cmul, pow,
--- TODO: ones, zeros, cat, diag, eye, linspace, 
+-- TODO: cat, diag, eye, linspace, 
 --       logspace, rand, randn, range, randperm,
 --       reshape, tril, triu, log1p, addcmul, lt, le, gt, ge, eq, ne
 --       addcdiv, addmv, addr, addmm, mm, ger, A+B, A-B,-B, A*B, A/x, cross,
